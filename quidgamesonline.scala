@@ -62,7 +62,9 @@ val scriptTokenRepo =
          |            // validate Token
          |            OUTPUTS(0).tokens(0)._1 == SELF.tokens(0)._1,
          |            OUTPUTS(0).tokens(0)._2 == SELF.tokens(0)._2 - (INPUTS(1).value - 2 * minFee) / ticketPrice,
-         |            OUTPUTS(0).tokens(1)._1 == SELF.tokens(1)._1, // Raffle Service Token
+         
+         |            //OUTPUTS(0).tokens(1)._1 == SELF.tokens(1)._1, // Raffle Service Token
+         
          |            OUTPUTS(1).tokens(0)._1 == SELF.tokens(0)._1,
          |            OUTPUTS(1).tokens(0)._2 == (INPUTS(1).value - 2 * minFee) / ticketPrice,
          |            // ERG Protect
@@ -85,7 +87,7 @@ val scriptTokenRepo =
          |}""".stripMargin
 
 val blockchainSim = newBlockChainSimulationScenario("Quid Games")
-val pinNumber = "1293"
+val pinNumber = "3"
 val userParty = blockchainSim.newParty("Abdi")
 val winnerContract = ErgoScriptCompiler.compile(
 Map(), winnerScript)
@@ -98,7 +100,6 @@ Map("deadlineHeight" -> 50,
    "projectPubKey" -> newRound.wallet.getAddress.pubKey),
 TicketScript)
 
-val raffleTokenId: String = "298cbf467b7c5fd38fd3dd8cea35d6c3911f6960db6f6a66548f242a41742870"
 val raffleContract = ErgoScriptCompiler.compile(
   Map(
    "ticketPrice" -> 1000000L,
@@ -108,60 +109,73 @@ val raffleContract = ErgoScriptCompiler.compile(
   scriptTokenRepo)
 
 val quidToken = blockchainSim.newToken("QUID")
-val quidTokenAmount = 40L
+val quidTokenAmount = 1000L
+
+newRound.generateUnspentBoxes(
+      toSpend       = 10000000000L,
+      tokensToSpend = List(quidToken -> 1001L))
+
 
 userParty.generateUnspentBoxes(
       toSpend       = 1000000000,
-      tokensToSpend = List(quidToken -> quidTokenAmount))
+      tokensToSpend = List(quidToken -> 1001L))
 
-val ticketToken = blockchainSim.newToken("TICKET")
 
+//in1
 val gameBox = Box(value = 1000000L,
                           script = raffleContract,
-                        token = (quidToken -> quidTokenAmount),
-                          registers = Map(R4 -> pinNumber.getBytes(), R5 -> pinNumber.getBytes(), R6 -> pinNumber.getBytes()))
+                  token = (quidToken -> quidTokenAmount),
+                          registers = Map(R4 -> 0L, R5 -> 50L, R6 -> 10L))
 
-
+//in2
 val participantBox = Box(value = 4000000L,
                           script = contract(userParty.wallet.getAddress.pubKey))
 
 val generateGameBox = Transaction(
-      inputs       = userParty.selectUnspentBoxes(toSpend = 1000000L),
+      inputs       = newRound.selectUnspentBoxes(toSpend = 1000000L),
       outputs      = List(gameBox),
       fee          = MinTxFee,
-      sendChangeTo = userParty.wallet.getAddress
+      sendChangeTo = newRound.wallet.getAddress
     )
 
-userParty.printUnspentAssets()
-println("-----------")
-
-val generateGameBoxSigned = userParty.wallet.sign(generateGameBox)
+val generateGameBoxSigned = newRound.wallet.sign(generateGameBox)
 blockchainSim.send(generateGameBoxSigned)
+newRound.generateUnspentBoxes(
+      toSpend       = 10000000000L,
+      tokensToSpend = List(quidToken -> 1001L))
+
 
 val generateParticipantBox = Transaction(
-      inputs       = userParty.selectUnspentBoxes(toSpend = 4000000L),
+      inputs       = userParty.selectUnspentBoxes(toSpend = 4000000L, tokensToSpend = List(quidToken -> quidTokenAmount)),
       outputs      = List(participantBox),
       fee          = MinTxFee,
       sendChangeTo = userParty.wallet.getAddress
     )
 
+
+
 val generateParticipantBoxSigned = userParty.wallet.sign(generateParticipantBox)
 blockchainSim.send(generateParticipantBoxSigned)
 
+//out1
 val newGameBox = Box(value = 3000000L,
                     script = raffleContract,
-                     token = (quidToken -> quidTokenAmount),
-                     registers = Map(R4 -> pinNumber.getBytes(), R5 -> pinNumber.getBytes(), R6 -> pinNumber.getBytes())
+                     token = (quidToken -> 998L),
+                     registers = Map(R4 -> 2L, R5 -> 50L, R6 -> 10L)
                     )
+val raffleErgoTree = raffleContract.ergoTree
+val scriptTokenRepoHash: Digest32 = scorex.crypto.hash.Blake2b256(raffleErgoTree.bytes)
+val propByte = userParty.wallet.getAddress.pubKey
 
+//out2
 val ticket = Box(value = 1000000L,
                 script = ticketContract,
-                registers = Map(R4 -> pinNumber.getBytes(), R5 -> pinNumber.getBytes(), R6 -> pinNumber.getBytes(), R7 -> pinNumber.getBytes()),
-                 token = (quidToken -> 20)
+                token = (quidToken -> (2L)),
+                registers = Map(R4 -> 0L, R5 -> 2L, R6 ->scriptTokenRepoHash, R7 -> propByte)
                 )
 
 
-
+// TRANSACTION
 val purchaseTransaction = Transaction(
       inputs       = List(generateGameBoxSigned.outputs(0), generateParticipantBoxSigned.outputs(0)),
       outputs      = List(newGameBox, ticket),
@@ -169,88 +183,10 @@ val purchaseTransaction = Transaction(
       sendChangeTo = userParty.wallet.getAddress
     )
 
-
+// SUBMIT TRANSACTION
 val purchaseTransactionSigned = userParty.wallet.sign(purchaseTransaction)
 blockchainSim.send(purchaseTransactionSigned)
 
 
-val pinLockScript = s"""
-  sigmaProp(INPUTS(0).R4[Coll[Byte]].get == blake2b256(OUTPUTS(0).R4[Coll[Byte]].get))
-""".stripMargin
-val pinLockContract = ErgoScriptCompiler.compile(Map(), pinLockScript)
-
-// Build the P2S Address of the contract.
-// This is not needed for the code at hand, but is demonstrated here as a reference
-// to see how to acquire the P2S address so you can use contracts live on mainnet.
-val contractAddress = Pay2SAddress(pinLockContract.ergoTree)
-println("Pin Lock Contract Address: " + contractAddress)
-println("-----------")
-
-
-
-
-// Define example user input
-
-// Hash the pin number
-val hashedPin = Blake2b256(pinNumber.getBytes())
-// Define initial nanoErgs in the user's wallet
-val userFunds = 100000000
-// Generate initial userFunds in the user's wallet
-userParty.printUnspentAssets()
-println("-----------")
-
-
-
-///////////////////////////////////////////////////////////////////////////////////
-// Deposit Funds Into Pin Lock Contract //
-///////////////////////////////////////////////////////////////////////////////////
-// Create an output box with the user's funds locked under the contract
-val pinLockBox      = Box(value = userFunds/2,
-                          script = pinLockContract,
-                          register = (R4 -> hashedPin))
-// Create the deposit transaction which locks the users funds under the contract
-val depositTransaction = Transaction(
-      inputs       = userParty.selectUnspentBoxes(toSpend = userFunds),
-      outputs      = List(pinLockBox),
-      fee          = MinTxFee,
-      sendChangeTo = userParty.wallet.getAddress
-    )
-
-// Print depositTransaction
-println(depositTransaction)
-// Sign the depositTransaction
-val depositTransactionSigned = userParty.wallet.sign(depositTransaction)
-// Submit the tx to the simulated blockchain
-blockchainSim.send(depositTransactionSigned)
-userParty.printUnspentAssets()
-println("-----------")
-
-
-
-///////////////////////////////////////////////////////////////////////////////////
-// Withdraw Funds Locked Under Pin Lock Contract //
-///////////////////////////////////////////////////////////////////////////////////
-// Create an output box which withdraws the funds to the user
-// Subtracts `MinTxFee` from value to account for tx fee which
-// must be paid.
-val withdrawBox      = Box(value = userFunds/2 - MinTxFee,
-                          script = contract(userParty.wallet.getAddress.pubKey),
-                          register = (R4 -> pinNumber.getBytes()))
-
-// Create the withdrawTransaction
-val withdrawTransaction = Transaction(
-      inputs       = List(depositTransactionSigned.outputs(0)),
-      outputs      = List(withdrawBox),
-      fee          = MinTxFee,
-      sendChangeTo = userParty.wallet.getAddress
-    )
-// Print withdrawTransaction
-println(withdrawTransaction)
-// Sign the withdrawTransaction
-val withdrawTransactionSigned = userParty.wallet.sign(withdrawTransaction)
-// Submit the withdrawTransaction
-blockchainSim.send(withdrawTransactionSigned)
-
-// Print the user's wallet, which shows that the coins have been withdrawn (with same total as initial, minus the MinTxFee * 2)
-userParty.printUnspentAssets()
-println("-----------")
+println("Game Box: ", purchaseTransactionSigned.outputs(0))
+println("Ticket: ", purchaseTransactionSigned.outputs(1))
