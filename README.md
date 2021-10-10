@@ -9,7 +9,9 @@ After successful testing on scastie, we have built the code to run the contract 
 
 ## The development
 
-![Image of the code](scala_code.png)
+- three ErgoScript contracts (Ticket, Winner, Game)
+- REST API (Betting, Checking, Submitting)
+- Scala Backend (Creation of Transactions, Blocks, etc.)
 
 ## Useful Links
 
