@@ -32,16 +32,17 @@ val winnerScript =
 
 val TicketScript =
   s"""{
-     |  val winnerPhaseSpend = HEIGHT > deadlineHeight &&
-     |                         1 == 1 &&
-     |                         INPUTS(0).tokens(0)._1 == SELF.tokens(0)._1
+     |  val winnerPhaseSpend = HEIGHT > deadlineHeight
      |
-     |  val receiverCheckWinner = OUTPUTS(0).propositionBytes == SELF.R7[Coll[Byte]].get &&
-     |                            OUTPUTS(0).value == INPUTS(0).value
+     |  val receiverCheckWinner = OUTPUTS(0).R8[Long].get == SELF.R8[Long].get
      |
      |  sigmaProp(receiverCheckWinner && winnerPhaseSpend)
      |}""".stripMargin
 
+    val scriptRaffleService = // may not be used
+      s"""{
+         |  servicePubKey
+         |}""".stripMargin
 val scriptTokenRepo =
       s"""{
          |  val totalSoldTicket = SELF.R4[Long].get
@@ -94,11 +95,15 @@ Map(), winnerScript)
 
 val newRound = blockchainSim.newParty("Round 1")
 
+
 val ticketContract = ErgoScriptCompiler.compile(
 Map("deadlineHeight" -> 5, 
    "ticketPrice" -> 1000000L,
+    "SECRET" -> 21,
    "projectPubKey" -> newRound.wallet.getAddress.pubKey),
 TicketScript)
+
+// 
 
 val raffleContract = ErgoScriptCompiler.compile(
   Map(
@@ -133,7 +138,7 @@ val gameBox = Box(value = 1000000L,
 
 //in2
 val participantBox = Box(value = 4000000L,
-                         registers = Map(R4 -> 55L),
+                         registers = Map(R4 -> 55L, R5 -> 33L),
                           script = contract(userParty.wallet.getAddress.pubKey))
 
 val generateGameBox = Transaction(
@@ -176,7 +181,7 @@ val propByte = userParty.wallet.getAddress.pubKey
 val ticket = Box(value = 1000000L,
                 script = ticketContract,
                 token = (quidToken -> (2L)),
-                registers = Map(R4 -> 0L, R5 -> 2L, R6 ->scriptTokenRepoHash, R7 -> propByte)
+                registers = Map(R4 -> 0L, R5 -> 2L, R6 ->scriptTokenRepoHash, R7 -> propByte, R8 -> 42L)
                 )
 
 
@@ -198,19 +203,35 @@ println("Ticket: ", purchaseTransactionSigned.outputs(1))
 
 
 
+
 blockchainSim.setHeight(6)
 
+val sumOfAllBet = 42L
 
 //winnerbox
 val winnerbox = Box(value = 1000000L,
                 script = winnerContract,
-                token = (quidToken -> (2L)),
-                registers = Map(R4 -> 0L, R5 -> 2L, R6 ->scriptTokenRepoHash, R7 -> propByte)
+                token = (quidToken -> 2L),
+                registers = Map(R4 -> 0L, R5 -> 0L, R6 -> 0L, R7 -> propByte, R8 ->sumOfAllBet)
                 )
 
+//in2
+val check = Box(value = 4000000L,
+                         registers = Map(R4 -> 0L, R5 -> 0L, R6 -> 0L, R7 -> propByte),
+                          script = contract(userParty.wallet.getAddress.pubKey))
+
+val genCheck = Transaction(
+      inputs       = userParty.selectUnspentBoxes(toSpend = 4000000L, tokensToSpend = List(quidToken -> quidTokenAmount)),
+      outputs      = List(check),
+      fee          = MinTxFee,
+      sendChangeTo = userParty.wallet.getAddress
+    )
+
+val genCheckSigned = userParty.wallet.sign(genCheck)
+blockchainSim.send(genCheckSigned)
 
 val chuckaluck = Transaction(
-      inputs       = userParty.selectUnspentBoxes(toSpend = 1000000L),
+      inputs       = List(genCheckSigned.outputs(0), purchaseTransactionSigned.outputs(1)),
       outputs      = List(winnerbox),
       fee          = MinTxFee,
       sendChangeTo = userParty.wallet.getAddress
