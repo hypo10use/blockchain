@@ -2,6 +2,9 @@
 
 The development of how Quid Games would interact with the blockchain was all done using **ergoscript**.
 
+# Use Case Diagram
+![Use Case](https://github.com/hypo10use/planning/blob/main/contract.png)
+
 ## Development
 
 The Ergo Platform provides a sandbox to run ergoscript code. This can be found [here](https://scastie.scala-lang.org/YCzvl8NBQwa7R0pVI5mHnA).
