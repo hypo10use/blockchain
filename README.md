@@ -1,18 +1,14 @@
 # blockchain
 
-The development of how Quid Games would interact with the blockchain was all done using **ergoscript**.
+This repo contains the code for how Quid Games interacts with the blockchain was all done using **ergoscript**.
+
+
 
 # Use Case Diagram
 ![Use Case](https://github.com/hypo10use/planning/blob/main/contract.png)
 
-## Development
+## Useful Links
 
 The Ergo Platform provides a sandbox to run ergoscript code. This can be found [here](https://scastie.scala-lang.org/YCzvl8NBQwa7R0pVI5mHnA).
 
-![]()
-
-## Helpful resources
-
-In order to develop the code, we utilised the following resources:
-1. [Scastie sandbox development area](https://scastie.scala-lang.org/)
-1. []
+Additionally, the ergo team provide a few [helpful guides](https://github.com/ergoplatform/ergoscript-by-example).
