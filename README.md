@@ -2,10 +2,12 @@
 
 This repo contains the code for how Quid Games interacts with the blockchain was all done using **ergoscript**.
 
-
-
 # Use Case Diagram
 ![Use Case](https://github.com/hypo10use/planning/blob/main/contract.png)
+
+## The development
+
+![Image of the code](scala_code.png)
 
 ## Useful Links
 
