@@ -1,12 +1,10 @@
-organization := "org.yourorganization"
+organization := "org.hypo10use"
 
-name := "liftfromscratch"
+name := "quidgames"
 
-version := "0.1-SNAPSHOT"
+version := "0.1"
 
 scalaVersion := "2.10.3"
-
-seq(webSettings :_*)
 
 val stage = taskKey[Unit]("Stage task")
 
