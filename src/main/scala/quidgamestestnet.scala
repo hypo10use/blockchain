@@ -170,7 +170,7 @@ object GameDAO {
         .build()
         })
     return tx
-        
+        }
 
 
   def check(address:String, id: Int): Future[Boolean] = {
