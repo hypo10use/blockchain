@@ -5,7 +5,7 @@
 
 # An example controller showing a sample home page
 GET     /                                   controllers.HomeController.index()
-GET     /bet                                controllers.HomeController.bet(address:String, bet:Int, guess:Int)
+GET     /bet/:address/:guess                                controllers.HomeController.bet(address:String, guess:Int)
 #GET     /tutorial                           controllers.HomeController.tutorial()
 
 
