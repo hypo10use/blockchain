@@ -1,1 +1,1 @@
-web: target/universal/stage/bin/quidgame -Dhttp.port=${PORT}
+web: target/universal/stage/bin/play-scala-hello-world-tutorial -Dhttp.port=${PORT}
