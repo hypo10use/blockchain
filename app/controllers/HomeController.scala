@@ -46,7 +46,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
 
   def bet(address:String, guess: Int) =  Action {  implicit request: Request[AnyContent] =>
 
-    val client = RestApiErgoClient.create("http://78.46.251.133:9052/swagger", NetworkType.TESTNET, " ")
+    val client = RestApiErgoClient.create("http://213.239.193.208:9053/", NetworkType.TESTNET, " ")
 
     client.execute(ctx => {
       val minFee = 1000000
