@@ -158,7 +158,6 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
       //in1
       val gameBox = txB.outBoxBuilder()
         .value(1000000)
-        .tokens()
         .registers(ErgoValue.of(0L),ErgoValue.of(50L), ErgoValue.of(10L))
         .contract(raffleContract)
         .build()
