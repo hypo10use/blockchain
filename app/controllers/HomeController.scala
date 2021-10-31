@@ -46,14 +46,11 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
 
   def bet(address:String, guess: Int) =  Action {  implicit request: Request[AnyContent] =>
 
-    val client = RestApiErgoClient.create("http://213.239.193.208:9053/", NetworkType.TESTNET, " ")
+    val client = RestApiErgoClient.create("http://213.239.193.208:9053/", NetworkType.MAINNET, " ")
 
     client.execute(ctx => {
       val minFee = 1000000
       val secret = BigInt("187b05ba1eb459d3e347753e2fb9da0e2fb3211e3e1a896a0665666b6ab5a2a8", 16)
-      val prover = ctx.newProverBuilder()
-        .withDLogSecret(secret.bigInteger)
-        .build()
       val pkAddress: Address = Address.create(address) // should be changed
       val listBoxes = ctx.getUnspentBoxesFor(pkAddress)
       var sumBoxes: Long = 0
