@@ -44,7 +44,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
     BadRequest(s"""{"success": false, "message": "${e.getMessage}"}""").as("application/json")
   }
 
-  def bet(address:String, guess: Int) =  {  implicit request: Request[AnyContent] =>
+  def bet(address:String, guess: Int) =  Action {  implicit request: Request[AnyContent] =>
 
     val client = RestApiErgoClient.create("http://78.46.251.133:9052/swagger", NetworkType.TESTNET, " ")
 
