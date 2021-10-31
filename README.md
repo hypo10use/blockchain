@@ -1,20 +1,37 @@
-# Blockchain
+# Play Hello World Web Tutorial for Scala
 
-This repo contains the code for how Quid Games interacts with the blockchain. It was done using ErgoScala and **ergoscript**. We have started our project on the playground using scastie and based used ErgoRaffles concept to implement our contracts. By using scastie and the playground, we have hit some roadblocker, where features were not yet fully implemented such as emitting multiple tokens in a box, which lead to the development of this lacking feature (https://github.com/ergoplatform/ergo-playgrounds/pull/21) within a few hours. This was quite suprising and very helpful and allowed us to continue implementing our use cases.
+To follow the steps in this tutorial, you will need the correct version of Java and sbt. The template requires:
 
-After successful testing on scastie, we have built the code to run the contract on ergos testnet. We have built a REST endpoint which communicates to our backend and will prepare transactions for betting (first diagram) and checking the winnings (second diagram). 
+* Java Software Developer's Kit (SE) 1.8 or higher
+* sbt 1.3.4 or higher. Note: if you downloaded this project as a zip file from <https://developer.lightbend.com>, the file includes an sbt distribution for your convenience.
 
-# Use Case Diagram
-![Use Case](https://github.com/hypo10use/planning/blob/main/contract.png)
+To check your Java version, enter the following in a command window:
 
-## The development
+```bash
+java -version
+```
 
-- three ErgoScript contracts (Ticket, Winner, Game)
-- REST API (Betting, Checking, Submitting)
-- Scala Backend (Creation of Transactions, Blocks, etc.)
+To check your sbt version, enter the following in a command window:
 
-## Useful Links
+```bash
+sbt sbtVersion
+```
 
-The Ergo Platform provides a sandbox to run ergoscript code. This can be found [here](https://scastie.scala-lang.org/YCzvl8NBQwa7R0pVI5mHnA).
+If you do not have the required versions, follow these links to obtain them:
 
-Additionally, the ergo team provide a few [helpful guides](https://github.com/ergoplatform/ergoscript-by-example).
+* [Java SE](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
+* [sbt](http://www.scala-sbt.org/download.html)
+
+## Build and run the project
+
+This example Play project was created from a seed template. It includes all Play components and an Akka HTTP server. The project is also configured with filters for Cross-Site Request Forgery (CSRF) protection and security headers.
+
+To build and run the project:
+
+1. Use a command window to change into the example project directory, for example: `cd play-scala-hello-world-web`
+
+2. Build the project. Enter: `sbt run`. The project builds and starts the embedded HTTP server. Since this downloads libraries and dependencies, the amount of time required depends partly on your connection's speed.
+
+3. After the message `Server started, ...` displays, enter the following URL in a browser: <http://localhost:9000>
+
+The Play application responds: `Welcome to the Hello World Tutorial!`

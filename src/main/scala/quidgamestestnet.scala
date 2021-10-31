@@ -1,5 +1,3 @@
-// Start writing your ScalaFiddle code here
-
 import javax.inject._
 import play.api.mvc._
 import io.circe.Json
@@ -13,7 +11,7 @@ import org.ergoplatform.appkit.Address
 import org.ergoplatform.ErgoAddress
 import org.ergoplatform.appkit.impl.ErgoTreeContract
 
-object client
+
 
 object GameDAO {
     
