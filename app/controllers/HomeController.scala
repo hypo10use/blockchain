@@ -46,8 +46,9 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
     BadRequest(s"""{"success": false, "message": "${e.getMessage}"}""").as("application/json")
   }
 
-  def bet(address:String, guess: Int) =  Action {  implicit request: Request[AnyContent] =>
-    val organizerAddr = "9fm2q6fv6nyQxPpkd6n111xjt9hGdeMCmTM74W5VfyDZ81EuKmf"
+  def bet() =  Action {  implicit request: Request[AnyContent] =>
+    //val organizerAddr = "9fm2q6fv6nyQxPpkd6n111xjt9hGdeMCmTM74W5VfyDZ81EuKmf"
+    val address = "9fm2q6fv6nyQxPpkd6n111xjt9hGdeMCmTM74W5VfyDZ81EuKmf"
     val client = RestApiErgoClient.create("http://135.181.205.79:9053", NetworkType.MAINNET, "", "")
     val accessLogger: Logger = Logger("access")
     accessLogger.debug(client.toString())
