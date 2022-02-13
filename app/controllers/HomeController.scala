@@ -55,11 +55,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
       val deadlineHeight = 685222
       val secret = BigInt("187b05ba1eb459d3e347753e2fb9da0e2fb3211e3e1a896a0665666b6ab5a2a8", 16)
       val pkAddress: Address = Address.create(address) // should be changed
-      val listBoxes = ctx.getUnspentBoxesFor(pkAddress)
-      var sumBoxes: Long = 0
-
-      val txB = ctx.newTxBuilder()
-
+      
       val winnerScript =
         s"""{
            |  sigmaProp(
