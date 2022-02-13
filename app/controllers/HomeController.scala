@@ -210,7 +210,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
     })
     }
     catch {
-      Ok(views.html.index())
+      case e: Throwable => exception(e)
     }
     }
 
