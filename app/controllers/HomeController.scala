@@ -206,7 +206,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
           .item("ticketScriptHash", ticketScriptHash)
           .build(),
         scriptTokenRepo)
-        val contractErgoTree = contractTokenRepo.getErgoTree.toString
+        val contractErgoTree = contractTokenRepo.getErgoTree.bytesHex
         Ok(contractErgoTree)
       //Ok(views.html.index())
     })
