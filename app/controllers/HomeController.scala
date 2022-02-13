@@ -155,8 +155,6 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
            |							// Project Box
            |							OUTPUTS(1).value >= totalRaised * projectCoef / 100,
            |							OUTPUTS(1).propositionBytes == servicePubKey.propBytes,
-           |							// Validate Seed
-           |							CONTEXT.dataInputs(0).tokens(0)._1 == oracleNebulaNFT,
            |							// Winner Box
            |							OUTPUTS(2).value  >= totalRaised * winnerCoef / 100,
            |							blake2b256(OUTPUTS(3).propositionBytes) == winnerScriptHash,
