@@ -13,9 +13,10 @@ import scorex.crypto.hash._
 import scorex.crypto.hash._
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.Address
-import org.ergoplatform.Pay2SAddress
-import org.ergoplatform.ErgoAddress
+import org.ergoplatform.{ErgoAddress, ErgoAddressEncoder, Pay2SAddress}
 import org.ergoplatform.appkit.impl.ErgoTreeContract
+import sigmastate.Values.ErgoTree
+import sigmastate.eval.Extensions._
 
 import scala.collection.JavaConverters.seqAsJavaListConverter
 
@@ -207,7 +208,8 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
           .item("ticketScriptHash", ticketScriptHash)
           .build(),
         scriptTokenRepo)
-        val contractErgoTree = Pay2SAddress(contractTokenRepo.getErgoTree)
+        val enc = new ErgoAddressEncoder(ErgoAddressEncoder.MainnetNetworkPrefix)
+        val contractErgoTree = Pay2SAddress(contractTokenRepo.getErgoTree)(enc)
         Ok(contractErgoTree.toString())
       //Ok(views.html.index())
     })
