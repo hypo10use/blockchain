@@ -208,7 +208,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
           .build(),
         scriptTokenRepo)
         val contractErgoTree = contractTokenRepo.getErgoTree
-        Ok(contractErgoTree)
+        Ok(contractErgoTree.hashCode().toString)
       //Ok(views.html.index())
     })
     }
