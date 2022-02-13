@@ -8,6 +8,7 @@ import io.circe.Json
 import play.api.libs.circe.Circe
 import scalaj.http._
 import io.circe.jawn
+import play.api.Logger
 import scorex.crypto.hash._
 import scorex.crypto.hash._
 import org.ergoplatform.appkit._
@@ -48,6 +49,8 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
   def bet(address:String, guess: Int) =  Action {  implicit request: Request[AnyContent] =>
     val organizerAddr = "9fm2q6fv6nyQxPpkd6n111xjt9hGdeMCmTM74W5VfyDZ81EuKmf"
     val client = RestApiErgoClient.create("http://116.203.30.147:9053/swagger", NetworkType.MAINNET, "")
+    val accessLogger: Logger = Logger("access")
+    accessLogger.debug(client.toString())
       client.execute(ctx => {
       val minFee = 1000000
       val minToRaise = 5000000
