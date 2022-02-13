@@ -13,6 +13,7 @@ import scorex.crypto.hash._
 import scorex.crypto.hash._
 import org.ergoplatform.appkit._
 import org.ergoplatform.appkit.Address
+import org.ergoplatform.Pay2SAddress
 import org.ergoplatform.ErgoAddress
 import org.ergoplatform.appkit.impl.ErgoTreeContract
 
@@ -206,8 +207,8 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
           .item("ticketScriptHash", ticketScriptHash)
           .build(),
         scriptTokenRepo)
-        val contractErgoTree = contractTokenRepo.getErgoTree.bytesHex
-        Ok(winnerScriptHash.toString)
+        val contractErgoTree = Pay2SAddress(contractTokenRepo.getErgoTree)
+        Ok(contractErgoTree.toString())
       //Ok(views.html.index())
     })
     }
