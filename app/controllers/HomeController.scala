@@ -73,12 +73,12 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
 
       val winnerContract = ctx.compileContract(
         ConstantsBuilder.create()
-          .item("deadlineHeight", 50)
           .build(),
         winnerScript)
 
       val winnerErgoTree = winnerContract.getErgoTree
       val winnerScriptHash: Digest32 = scorex.crypto.hash.Blake2b256(winnerErgoTree.bytes)
+
       val TicketScript =
         s"""{
            |  val refundPhaseSpend = HEIGHT > deadlineHeight &&
@@ -206,8 +206,9 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
           .item("ticketScriptHash", ticketScriptHash)
           .build(),
         scriptTokenRepo)
-        val contractErgoTree = contractTokenRepo.toString
-        Ok(contractErgoTree)
+        contractTokenRepo
+        val contractErgoTree = contractTokenRepo.getErgoTree.bytesHex
+        Ok(winnerScriptHash.toString)
       //Ok(views.html.index())
     })
     }
