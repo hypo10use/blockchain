@@ -46,10 +46,11 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
   }
 
   def bet(address:String, guess: Int) =  Action {  implicit request: Request[AnyContent] =>
-  //RestApiErgoClient.create("http://116.203.30.147:9053/swagger", NetworkType.MAINNET, "")
-    val client =  RestApiErgoClient.create("http://213.239.193.208:9053/swagger", NetworkType.TESTNET, " ")
     val organizerAddr = "9fm2q6fv6nyQxPpkd6n111xjt9hGdeMCmTM74W5VfyDZ81EuKmf"
-    client.execute(ctx => {
+    try
+    {
+      val client = RestApiErgoClient.create("http://116.203.30.147:9053/swagger", NetworkType.MAINNET, "")
+      client.execute(ctx => {
       val minFee = 1000000
       val minToRaise = 5000000
       val deadlineHeight = 685222
@@ -207,7 +208,11 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
         scriptTokenRepo)
       Ok(views.html.index())
     })
-  }
+    }
+    catch {
+      case e: Throwable => exception(e)
+    }
+    }
 
 
   def check(address:String, id: Int): UnsignedTransaction =  {
